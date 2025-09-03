@@ -24,13 +24,20 @@ export default function Home() {
   const pathname = usePathname();
   // State for search input value
   const [search, setSearch] = useState('');
+  const [category, setCategory] = useState('');
+
   // Handler for search input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
+    setCategory(''); // Clear category when typing
   };
+
+  // Handler for category toggle
   const handleToggle = (selected: string) => {
-    setSearch(selected);
+    setCategory(selected);
+    setSearch(''); // Clear search when selecting category
   };
+
   return (
     <div className="container">
       {/* Navigation bar at the top */}
@@ -42,8 +49,8 @@ export default function Home() {
         <Search searchfunction={handleInputChange} />
         {/* Search items dropdown/list */}
         <SearchItems searchfunction={handleToggle} />
-        {/* Show cards sections if no search, otherwise show search results */}
-        {search === '' ?
+        {/* Show cards sections if no search or category, otherwise show results */}
+        {(search === '' && category === '') ? (
           <div>
             <Cards category="featured" title="Featured Games" image="/Featured.png" />
             <Cards category="Joriginals" title="Jackpot Originals" image="/Joriginal.png" />
@@ -53,7 +60,10 @@ export default function Home() {
             <Cards category="Gameshow" title="Game Shows" image="/GShow.png" />
             <Cards category="Sports" title="Sports" image="/Sports.png" />
             <Cards category="new" title="New Games" image="/NewGame.png" />
-          </div> : <Results searchitem={search} />}
+          </div>
+        ) : (
+          <Results category={search || category} />
+        )}
       </div>
     </div>
   );

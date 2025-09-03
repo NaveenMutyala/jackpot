@@ -23,22 +23,40 @@ interface GameItem {
 }
 
 // Results component displays search results as cards in a responsive row
-const Results = ({ searchitem }: { searchitem: string }) => {
+const Results = ({ category }: { category: string }) => {
     // State for fetched games
     const [games, setGames] = useState<GameItem[]>([]);
     // State for loading indicator
     const [loading, setLoading] = useState(true);
 
-    // Fetch games from API when searchitem changes
+    // Fetch games from API when category changes
     useEffect(() => {
-        fetch('https://jpapi-staging.jackpot.bet/casino/games?search=' + searchitem)
+        let url = "https://jpapi-staging.jackpot.bet/casino/games";
+        if (category === 'Featured Games') {
+            url += "?sort=featuredPriority";
+        } else if (category === 'Jackpot Originals') {
+            url += "?vendor=JackpotOriginal";
+        } else if (category === 'New Games') {
+            url += "?sort=createdAt";
+        } else if (category === 'providers') {
+            url += "?sort=provider";
+        } else if (category === 'Slots') {
+            url += "?category=" + 'VIDEOSLOTS';
+        } else if (category === 'Table Games') {
+            url += "?category=" + 'TABLEGAMES';
+        } else if (category === 'Game shows') {
+            url += "?category=" + 'GAMESHOWS';
+        } else {
+            url += "?search=" + category;
+        }
+        fetch(url)
             .then(res => res.json())
             .then(data => {
                 setGames(data.data.items);
                 setLoading(false);
             })
             .catch(() => setLoading(false));
-    }, [searchitem]);
+    }, [category]);
 
     return (
         <div className='mt-4'>
